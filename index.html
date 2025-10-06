@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Máy tính Đạo hàm</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5fa;}
+        .container { max-width: 380px; margin: auto; background: #fff; padding: 28px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.08);}
+        h2 { color: #2a5dba; margin-bottom: 14px;}
+        .input-box { width: 100%; font-size: 18px; padding: 10px; margin-bottom: 12px; border-radius: 4px; border: 1px solid #ddd; }
+        .buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .buttons button { padding: 13px 0; font-size: 17px; border-radius: 4px; border: 1px solid #bbb; background: #f7faff; cursor: pointer; transition: background 0.2s;}
+        .buttons button:hover { background: #e2ebfa;}
+        .action-btn { grid-column: span 2; background: #2a5dba; color: #fff; border: none;}
+        .action-btn:hover { background: #204b95;}
+        .result { margin-top: 18px; font-size: 18px; color: #1c7c54;}
+        .note { color: #888; font-size: 13px; margin-top: 11px;}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Máy tính Đạo hàm</h2>
+        <input id="functionInput" class="input-box" type="text" placeholder="Nhập hàm f(x) hoặc bấm nút" />
+
+        <div class="buttons">
+            <button onclick="insert('sin(')">sin</button>
+            <button onclick="insert('cos(')">cos</button>
+            <button onclick="insert('tan(')">tan</button>
+            <button onclick="insert('cot(')">cot</button>
+            <button onclick="insert('^')">^</button>
+            <button onclick="insert('7')">7</button>
+            <button onclick="insert('8')">8</button>
+            <button onclick="insert('9')">9</button>
+            <button onclick="insert('(')">(</button>
+            <button onclick="insert(')')">)</button>
+            <button onclick="insert('4')">4</button>
+            <button onclick="insert('5')">5</button>
+            <button onclick="insert('6')">6</button>
+            <button onclick="insert('*')">*</button>
+            <button onclick="insert('/')">/</button>
+            <button onclick="insert('1')">1</button>
+            <button onclick="insert('2')">2</button>
+            <button onclick="insert('3')">3</button>
+            <button onclick="insert('+')">+</button>
+            <button onclick="insert('-')">-</button>
+            <button onclick="insert('0')">0</button>
+            <button onclick="insert('x')">x</button>
+            <button onclick="insert('.')">.</button>
+            <button onclick="clearInput()">C</button>
+            <button class="action-btn" onclick="calculateDerivative()">Tính đạo hàm</button>
+        </div>
+        <div class="result" id="result"></div>
+        <div class="note">
+            Hỗ trợ: <b>sin, cos, tan, cot, ^, x, (, ), +, -, *, /, số</b>.<br>
+            <b>cot(x)</b> có thể nhập trực tiếp hoặc <b>1/tan(x)</b>.<br>
+            Nhấn nút hoặc nhập bằng bàn phím đều được.<br>
+            VD: <b>sin(x) + x^2</b>
+        </div>
+    </div>
+    <script>
+        // Thêm cot vào math.js
+        math.import({
+            cot: function(x) {
+                return 1 / Math.tan(x);
+            }
+        });
+
+        function insert(value) {
+            const input = document.getElementById('functionInput');
+            // Chèn text tại vị trí con trỏ
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const before = input.value.substring(0, start);
+            const after = input.value.substring(end, input.value.length);
+            input.value = before + value + after;
+            input.focus();
+            // Đưa con trỏ về sau phần vừa chèn
+            const cursor = start + value.length;
+            input.setSelectionRange(cursor, cursor);
+        }
+
+        function clearInput() {
+            document.getElementById('functionInput').value = "";
+            document.getElementById('result').innerHTML = "";
+        }
+
+        function calculateDerivative() {
+            const input = document.getElementById('functionInput').value;
+            const resultDiv = document.getElementById('result');
+            try {
+                const node = math.parse(input);
+                const derivative = math.derivative(node, 'x');
+                resultDiv.innerHTML = "Đạo hàm: <b>f'(x) = " + derivative.toString() + "</b>";
+            } catch (err) {
+                resultDiv.innerHTML = "<span style='color: red'>Lỗi: " + err.message + "</span>";
+            }
+        }
+    </script>
+</body>
+</html>
